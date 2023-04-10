@@ -1,6 +1,6 @@
 # MultiNeRF: Testing with Ref-NeRF
 
-Copy of original repo from [Google Research](https://github.com/google-research/multinerf.git)
+Copy of original repo from [Google Research](https://github.com/google-research/multinerf.git) leaving only essentials to train on your own data.
 
 ## Setup
 
@@ -26,22 +26,61 @@ git clone https://github.com/rmbrualla/pycolmap.git ./internal/pycolmap
 # Confirm that all the unit tests pass.
 ./scripts/run_all_unit_tests.sh
 ```
-You'll probably also need to update your JAX installation to support GPUs or TPUs.
 
-Install Jaxlib version that matches CUDA 11.3:
+### Install CUDA and cuDNN
+
+Install Jaxlib version that matches CUDA 11.3 toolkit. First install CUDA and cuDNN in Anaconda using the following commands:
+```
+conda install -c "nvidia/label/cuda-11.3.1" cuda-toolkit
+conda install -c "nvidia/label/cuda-11.3.1" cuda-nvcc
+```
+
+Check cuDNN version:
+```
+conda list cudnn
+```
+
+Check CUDA version:
+```
+nvcc -V
+```
+Now install jaxlib with same cuDNN version. Unfortunately, there is no pre-compiled version with cuDNN version 8.4. Could upgrade to 8.6, but conda-forge has no 8.6. Means need to downgrade both to 8.2.
+
 ```
 pip install jax==0.4.1
-pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.4.1+cuda11.cudnn86-cp310-cp310-manylinux2014_x86_64.whl
+pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.4.1+cuda11.cudnn82-cp310-cp310-manylinux2014_x86_64.whl
 ```
-Monitor GPU usage as batch_size must be reduced to match available GPU memory:
+Change cuDNN installation version in conda:
 ```
-pip install nvitop
+conda install -c anaconda cudnn==8.2.1
+
 ```
+
 Set LD library path to correct environment:
 ```
 LD_LIBRARY_PATH=/home/martin/anaconda3/envs/points/lib/
 export LD_LIBRARY_PATH
 ```
+
+### Check CUDA and cuDNN Installation
+
+Check if jax detects GPU:
+
+```
+import jax
+jax.default_backend()
+jax.devices()
+```
+
+Check jaxlib cuDNN compile version:
+
+```
+pip show jaxlib
+```
+
+Last number indicates compile version like `0.4.1+cuda11.cudnn82` for version 8.2.
+
+
 ### OOM errors
 
 As I use RTC2080TI with only 11GB memory, I have to reduce batch size, otherwise I 
@@ -50,6 +89,12 @@ get OOM error.
 If you do this, but want to preserve quality, be sure to increase the number
 of training iterations and decrease the learning rate by whatever scale factor you
 decrease batch size by.
+
+
+Monitor GPU usage as batch_size must be reduced to match available GPU memory:
+```
+pip install nvitop
+```
 
 ## Using your own data
 
@@ -87,5 +132,3 @@ python -m render \
   --logtostderr
 ```
 Your output video should now exist in the directory `my_dataset_dir/render/`.
-
-See below for more detailed instructions on either using COLMAP to calculate poses or writing your own dataset loader (if you already have pose data from another source, like SLAM or RealityCapture).
