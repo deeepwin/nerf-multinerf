@@ -56,7 +56,7 @@ decrease batch size by.
 Download datasets from here:
 
 Dataset 1: [mouse-2](https://1drv.ms/u/s!AtwBlzVMECHCpCPPnW6SjB4GmFBF?e=xZPY5M)  
-Dateset 2: [kettle-2]()
+Dateset 2: [kettle-2](https://1drv.ms/u/s!AtwBlzVMECHCpCRmkp6JwkpzkFZA?e=NtLuyu)
 
 
 Summary: first, calculate poses. Second, train MultiNeRF. Third, render a result video from the trained NeRF model.
