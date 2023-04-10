@@ -48,7 +48,7 @@ class Config:
   """Configuration flags for everything."""
   dataset_loader: str = 'llff'  # The type of dataset loader to use.
   batching: str = 'all_images'  # Batch composition, [single_image, all_images].
-  batch_size: int = 16384  # The number of rays/pixels in each batch.
+  batch_size: int = 2048  # # DEEEPWIN  16384 The number of rays/pixels in each batch.
   patch_size: int = 1  # Resolution of patches sampled for training batches.
   factor: int = 0  # The downsample factor of images, 0 for no downsampling.
   load_alphabetical: bool = True  # Load images in COLMAP vs alphabetical
@@ -70,7 +70,7 @@ class Config:
   render_dir: Optional[str] = None  # Output rendering directory.
   data_dir: Optional[str] = None  # Input data directory.
   vocab_tree_path: Optional[str] = None  # Path to vocab tree for COLMAP.
-  render_chunk_size: int = 16384  # Chunk size for whole-image renderings.
+  render_chunk_size: int = 1024  # # DEEEPWIN 16384 Chunk size for whole-image renderings.
   num_showcase_images: int = 5  # The number of test-set images to showcase.
   deterministic_showcase: bool = True  # If True, showcase the same images.
   vis_num_rays: int = 16  # The number of rays to visualize.
@@ -78,7 +78,7 @@ class Config:
   vis_decimate: int = 0
 
   # Only used by train.py:
-  max_steps: int = 250000  # The number of optimization steps.
+  max_steps: int = 250000 # The number of optimization steps. # # DEEEPWIN to compensate reduced batch_size, 16384/2048=8 -> 8*250000  
   early_exit_steps: Optional[int] = None  # Early stopping, for debugging.
   checkpoint_every: int = 25000  # The number of steps to save a checkpoint.
   print_every: int = 100  # The number of steps between reports to tensorboard.
@@ -106,7 +106,7 @@ class Config:
   # train_weight_l2_* parameters in TensorBoard to know what can be regularized.
 
   lr_init: float = 0.002  # The initial learning rate.
-  lr_final: float = 0.00002  # The final learning rate.
+  lr_final: float = 0.00002  # The final learning rate. # DEEEPWIN to compensate reduced batch_size, 16384/2048=8 -> 0.00002/8
   lr_delay_steps: int = 512  # The number of "warmup" learning steps.
   lr_delay_mult: float = 0.01  # How much sever the "warmup" should be.
   adam_beta1: float = 0.9  # Adam's beta2 hyperparameter.

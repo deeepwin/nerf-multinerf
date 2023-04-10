@@ -622,6 +622,38 @@ class PropMLP(MLP):
   pass
 
 
+def move_chunks_to_cpu(chunks):
+  chunks_new = []
+  device_cpu = jax.devices("cpu")[0]
+  for chunk in chunks:
+    chunk_new = {}
+    chunk_new["acc"] = jax.device_put(chunk["acc"], device_cpu)
+    chunk_new["distance_mean"] = \
+      jax.device_put(chunk["distance_mean"], device_cpu)
+    chunk_new["distance_median"] = \
+      jax.device_put(chunk["distance_median"], device_cpu)
+    chunk_new["distance_percentile_5"] = \
+      jax.device_put(chunk["distance_percentile_5"], device_cpu)
+    chunk_new["distance_percentile_95"] = \
+      jax.device_put(chunk["distance_percentile_95"], device_cpu)
+    chunk_new["normals"] = \
+      jax.device_put(chunk["normals"], device_cpu)
+    chunk_new["normals_pred"] = \
+      jax.device_put(chunk["normals_pred"], device_cpu)
+
+    chunk_new["ray_rgbs"] = [ jax.device_put(data, device_cpu)
+      for data in chunk["ray_rgbs"] ]
+    chunk_new["ray_sdist"] = [ jax.device_put(data, device_cpu)
+      for data in chunk["ray_sdist"] ]
+    chunk_new["ray_weights"] = [ jax.device_put(data, device_cpu)
+      for data in chunk["ray_weights"] ]
+
+    chunk_new["rgb"] = jax.device_put(chunk["rgb"], device_cpu)
+    chunk_new["roughness"] = jax.device_put(chunk["roughness"], device_cpu)
+
+    chunks_new.append(chunk_new)
+  return chunks_new
+
 def render_image(render_fn: Callable[[jnp.array, utils.Rays],
                                      Tuple[List[Mapping[Text, jnp.ndarray]],
                                            List[Tuple[jnp.ndarray, ...]]]],
@@ -683,6 +715,8 @@ def render_image(render_fn: Callable[[jnp.array, utils.Rays],
         chunk_rendering[k] = [r[k] for r in chunk_renderings]
 
     chunks.append(chunk_rendering)
+
+  # DEEEPWIN chunks = move_chunks_to_cpu(chunks)
 
   # Concatenate all chunks within each leaf of a single pytree.
   rendering = (

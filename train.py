@@ -41,6 +41,14 @@ jax.config.parse_flags_with_absl()
 TIME_PRECISION = 1000  # Internally represent integer times in milliseconds.
 
 
+# DEEPWIN - otherwise get out of memory error
+import os
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"]="false"
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = "true"
+#os.environ["XLA_PYTHON_CLIENT_MEM_FRACTION"]=".50"
+#os.environ["XLA_PYTHON_CLIENT_ALLOCATOR"]="platform"
+#os.environ["JAX_PLATFORM_NAME"] = "cpu"
+
 def main(unused_argv):
   rng = random.PRNGKey(20200823)
   # Shift the numpy random seed by host_id() to shuffle data loaded by different
@@ -49,6 +57,7 @@ def main(unused_argv):
 
   config = configs.load_config()
 
+  print('--------------------- batch size: ' + str(config.batch_size))
   if config.batch_size % jax.device_count() != 0:
     raise ValueError('Batch size must be divisible by the number of devices.')
 

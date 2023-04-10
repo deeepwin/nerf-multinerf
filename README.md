@@ -42,6 +42,20 @@ git clone https://github.com/rmbrualla/pycolmap.git ./internal/pycolmap
 ```
 You'll probably also need to update your JAX installation to support GPUs or TPUs.
 
+Install Jaxlib version that matches CUDA 11.3:
+```
+pip install jax==0.4.1
+pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.4.1+cuda11.cudnn86-cp310-cp310-manylinux2014_x86_64.whl
+```
+Monitor GPU usage as batch_size must be reduced to match available GPU memory:
+```
+pip install nvitop
+```
+Set LD library path to correct environment:
+```
+LD_LIBRARY_PATH=/home/martin/anaconda3/envs/points/lib/
+export LD_LIBRARY_PATH
+```
 ## Running
 
 Example scripts for training, evaluating, and rendering can be found in
@@ -61,11 +75,17 @@ decrease batch size by.
 
 ## Using your own data
 
+Download datasets from here:
+
+Dataset 1: [mouse-2](https://1drv.ms/u/s!AtwBlzVMECHCpCPPnW6SjB4GmFBF?e=xZPY5M)  
+Dateset 2: [kettle-2]()
+
+
 Summary: first, calculate poses. Second, train MultiNeRF. Third, render a result video from the trained NeRF model.
 
 1. Calculating poses (using COLMAP):
 ```
-DATA_DIR=my_dataset_dir
+DATA_DIR=/mnt/data/github/nerf/data/mine/kettle-2
 bash scripts/local_colmap_and_resize.sh ${DATA_DIR}
 ```
 2. Training MultiNeRF:
